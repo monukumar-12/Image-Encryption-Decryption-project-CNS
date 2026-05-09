@@ -1,5 +1,5 @@
 # =========================================================
-# ADVANCED DES IMAGE ENCRYPTION & DECRYPTION GUI
+# PROFESSIONAL DES IMAGE ENCRYPTION & DECRYPTION SYSTEM
 # =========================================================
 
 from Crypto.Cipher import DES
@@ -17,61 +17,58 @@ import time
 # =========================================================
 
 # =========================================================
-# GUI SETTINGS
+# APP SETTINGS
 # =========================================================
 
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme("dark-blue")
 
 app = ctk.CTk()
-app.title("DES Image Encryption & Decryption")
-app.geometry("1000x700")
+app.geometry("1200x750")
+app.title("Enterprise DES Image Security Suite")
 app.resizable(False, False)
 
 selected_file = ""
 
 # =========================================================
-# GENERATE DES KEY
+# KEY GENERATION
 # =========================================================
 
 def generate_key(password):
     return md5(password.encode()).digest()[:8]
 
 # =========================================================
-# IMAGE PREVIEW
+# SHOW IMAGE
 # =========================================================
 
 def show_image(path):
+
     img = Image.open(path)
-    img = img.resize((350, 350))
+    img = img.resize((420, 420))
 
     photo = ImageTk.PhotoImage(img)
 
-    image_label.configure(image=photo, text="")
-    image_label.image = photo
+    preview_label.configure(image=photo, text="")
+    preview_label.image = photo
 
 # =========================================================
-# BROWSE IMAGE
+# SELECT IMAGE
 # =========================================================
 
 def browse_image():
+
     global selected_file
 
     file_path = filedialog.askopenfilename(
         title="Select Image",
-        filetypes=[
-            ("Image Files", "*.png *.jpg *.jpeg *.bmp *.gif")
-        ]
+        filetypes=[("Images", "*.png *.jpg *.jpeg *.bmp *.gif")]
     )
 
     if file_path:
-        selected_file = file_path
-        file_name.configure(text=os.path.basename(file_path))
-        show_image(file_path)
 
-# =========================================================
-# ENCRYPT IMAGE
-# =========================================================
+        selected_file = file_path
+        image_name.configure(text=os.path.basename(file_path))
+        show_image(file_path)
 
 # =========================================================
 # ENCRYPT IMAGE
@@ -82,7 +79,7 @@ def encrypt_image():
     global selected_file
 
     if selected_file == "":
-        messagebox.showerror("Error", "Please Select Image")
+        messagebox.showerror("Error", "Select Image First")
         return
 
     password = password_entry.get()
@@ -120,35 +117,29 @@ def encrypt_image():
 
             end = time.time()
 
-            # =========================================
-            # CLEAR IMAGE PREVIEW AFTER ENCRYPTION
-            # =========================================
-
-            image_label.configure(
+            # REMOVE PREVIEW
+            preview_label.configure(
                 image="",
                 text="IMAGE ENCRYPTED\nPreview Hidden"
             )
 
-            image_label.image = None
-
-            # REMOVE FILE NAME
-            file_name.configure(text="No Image Selected")
+            preview_label.image = None
 
             # CLEAR PASSWORD
             password_entry.delete(0, 'end')
 
-            # RESET SELECTED FILE
+            # RESET IMAGE
             selected_file = ""
+            image_name.configure(text="No Image Selected")
 
-            # STATUS
             status_label.configure(
-                text=f"Image Encrypted Successfully in {round(end-start,2)} sec",
-                text_color="lightgreen"
+                text=f"Encryption Completed in {round(end-start,2)} sec",
+                text_color="#00ff99"
             )
 
             messagebox.showinfo(
                 "Success",
-                f"Encrypted File Saved Successfully\n\n{output_file}"
+                "Image Encrypted Successfully"
             )
 
     except Exception as e:
@@ -162,7 +153,7 @@ def decrypt_image():
 
     encrypted_file = filedialog.askopenfilename(
         title="Select Encrypted File",
-        filetypes=[("DES Files", "*.des")]
+        filetypes=[("DES File", "*.des")]
     )
 
     if encrypted_file == "":
@@ -210,17 +201,16 @@ def decrypt_image():
 
             show_image(output_file)
 
-            status_label.configure(
-                text=f"Image Decrypted Successfully in {round(end-start,2)} sec",
-                text_color="cyan"
-            )
-
-            # CLEAR PASSWORD AFTER DECRYPTION
             password_entry.delete(0, 'end')
+
+            status_label.configure(
+                text=f"Decryption Completed in {round(end-start,2)} sec",
+                text_color="#00ccff"
+            )
 
             messagebox.showinfo(
                 "Success",
-                f"Decrypted Image Saved:\n{output_file}"
+                "Image Decrypted Successfully"
             )
 
     except Exception:
@@ -230,136 +220,163 @@ def decrypt_image():
         )
 
 # =========================================================
-# TITLE
+# HEADER
 # =========================================================
 
-title = ctk.CTkLabel(
+header = ctk.CTkFrame(app, height=80, corner_radius=0)
+header.pack(fill="x")
+
+heading = ctk.CTkLabel(
+    header,
+    text="ENTERPRISE DES IMAGE SECURITY SUITE",
+    font=("Montserrat", 32, "bold"),
+    text_color="#00d4ff"
+)
+
+heading.pack(pady=20)
+
+# =========================================================
+# MAIN AREA
+# =========================================================
+
+main_frame = ctk.CTkFrame(
     app,
-    text="ADVANCED DES IMAGE SECURITY SYSTEM",
-    font=("Arial", 30, "bold")
+    width=1150,
+    height=580,
+    corner_radius=25
 )
 
-title.pack(pady=20)
+main_frame.pack(pady=25)
 
 # =========================================================
-# MAIN FRAME
+# LEFT PANEL
 # =========================================================
 
-main_frame = ctk.CTkFrame(app, width=900, height=500)
-main_frame.pack(pady=10)
-
-# =========================================================
-# IMAGE PREVIEW
-# =========================================================
-
-image_label = ctk.CTkLabel(
+left_panel = ctk.CTkFrame(
     main_frame,
-    text="IMAGE PREVIEW",
-    width=350,
-    height=350,
-    corner_radius=15
+    width=500,
+    height=520,
+    corner_radius=20
 )
 
-image_label.place(x=40, y=50)
+left_panel.place(x=30, y=30)
+
+preview_title = ctk.CTkLabel(
+    left_panel,
+    text="IMAGE PREVIEW",
+    font=("Arial", 24, "bold")
+)
+
+preview_title.pack(pady=15)
+
+preview_label = ctk.CTkLabel(
+    left_panel,
+    text="No Image Selected",
+    width=420,
+    height=420,
+    corner_radius=15,
+    fg_color="#1a1a1a"
+)
+
+preview_label.pack(pady=10)
 
 # =========================================================
-# RIGHT SIDE PANEL
+# RIGHT PANEL
 # =========================================================
 
-side_frame = ctk.CTkFrame(main_frame, width=400, height=400)
-side_frame.place(x=470, y=50)
+right_panel = ctk.CTkFrame(
+    main_frame,
+    width=520,
+    height=520,
+    corner_radius=20
+)
 
-# =========================================================
-# FILE NAME
-# =========================================================
+right_panel.place(x=590, y=30)
 
-file_name = ctk.CTkLabel(
-    side_frame,
+system_title = ctk.CTkLabel(
+    right_panel,
+    text="SECURITY CONTROL PANEL",
+    font=("Arial", 26, "bold"),
+    text_color="#00ffcc"
+)
+
+system_title.pack(pady=25)
+
+image_name = ctk.CTkLabel(
+    right_panel,
     text="No Image Selected",
     font=("Arial", 16)
 )
 
-file_name.pack(pady=20)
-
-# =========================================================
-# PASSWORD ENTRY
-# =========================================================
+image_name.pack(pady=10)
 
 password_entry = ctk.CTkEntry(
-    side_frame,
-    width=300,
-    height=45,
-    placeholder_text="Enter Secret Password",
+    right_panel,
+    width=350,
+    height=50,
+    placeholder_text="Enter Secure Password",
     show="*",
-    font=("Arial", 16)
+    font=("Arial", 18),
+    corner_radius=12
 )
 
-password_entry.pack(pady=20)
-
-# =========================================================
-# BUTTONS
-# =========================================================
+password_entry.pack(pady=30)
 
 browse_btn = ctk.CTkButton(
-    side_frame,
+    right_panel,
     text="Browse Image",
-    width=250,
-    height=45,
-    command=browse_image,
-    font=("Arial", 16, "bold")
+    width=300,
+    height=55,
+    font=("Arial", 18, "bold"),
+    corner_radius=15,
+    command=browse_image
 )
 
 browse_btn.pack(pady=15)
 
 encrypt_btn = ctk.CTkButton(
-    side_frame,
+    right_panel,
     text="Encrypt Image",
-    width=250,
-    height=45,
-    fg_color="green",
-    hover_color="darkgreen",
-    command=encrypt_image,
-    font=("Arial", 16, "bold")
+    width=300,
+    height=55,
+    font=("Arial", 18, "bold"),
+    fg_color="#00aa55",
+    hover_color="#007733",
+    corner_radius=15,
+    command=encrypt_image
 )
 
 encrypt_btn.pack(pady=15)
 
 decrypt_btn = ctk.CTkButton(
-    side_frame,
+    right_panel,
     text="Decrypt Image",
-    width=250,
-    height=45,
-    fg_color="red",
-    hover_color="darkred",
-    command=decrypt_image,
-    font=("Arial", 16, "bold")
+    width=300,
+    height=55,
+    font=("Arial", 18, "bold"),
+    fg_color="#cc3333",
+    hover_color="#991111",
+    corner_radius=15,
+    command=decrypt_image
 )
 
 decrypt_btn.pack(pady=15)
 
-# =========================================================
-# STATUS LABEL
-# =========================================================
-
 status_label = ctk.CTkLabel(
-    app,
+    right_panel,
     text="System Ready",
-    font=("Arial", 16)
+    font=("Arial", 16, "bold")
 )
 
-status_label.pack(pady=20)
-
-# =========================================================
-# FOOTER
-# =========================================================
+status_label.pack(pady=25)
 
 footer = ctk.CTkLabel(
     app,
-    text="Cyber Security Project | DES Cryptography",
+    text="Cyber Security Project | DES Cryptography | Enterprise Edition",
     font=("Arial", 14)
 )
 
-footer.pack(side="bottom", pady=15)
+footer.pack(side="bottom", pady=10)
 
 # =========================================================
 # RUN APPLICATION
